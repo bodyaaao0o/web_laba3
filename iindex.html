@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Бібліотека книг</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="styles/style_l3.css">
+</head>
+<body>
+    
+
+    <h1>Бібліотека книг</h1>
+
+    <div class="group">
+        <div class="input-group">
+            <label for="title">Назва:</label>
+            <input type="text" id="title">
+        </div>
+
+        <div class="input-group">
+            <label for="author">Автор:</label>
+            <input type="text" id="author">
+        </div>
+
+        <div class="input-group">
+            <label for="pages">Кількість сторінок:</label>
+            <input type="number" id="pages">
+        </div>
+
+        <div class="input-group">
+            <label for="price">Ціна (грн):</label>
+            <input type="number" id="price">
+        </div>
+
+        <button onclick="addBook()" id="add-btn">Додати книгу</button>
+        <button style="display: none;" id="edit-btn" onclick="saveChanges()">Зберегти зміни</button>
+    </div>
+
+    <div class="group">
+        <div class="input-group">
+            <label for="search">Пошук:</label>
+            <input type="text" id="search" oninput="searchBook()">
+            <button onclick="resetSearch()">Скинути</button>
+        </div>
+    </div>
+
+    <h2>Список книг:</h2>
+    <div class="total_price">
+        Загальна ціна: <span id="total-price">0</span> грн
+    </div>
+    <div class="sort-button-container">
+        <button onclick="sortBooks()">Сортувати книги за ціною</button>
+    </div>
+
+    <div id="book-list"></div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

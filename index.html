@@ -8,52 +8,58 @@
     <link rel="stylesheet" href="styles/style_l3.css">
 </head>
 <body>
-    
-
-    <h1>Бібліотека книг</h1>
-
-    <div class="group">
-        <div class="input-group">
-            <label for="title">Назва:</label>
-            <input type="text" id="title">
-        </div>
-
-        <div class="input-group">
-            <label for="author">Автор:</label>
-            <input type="text" id="author">
-        </div>
-
-        <div class="input-group">
-            <label for="pages">Кількість сторінок:</label>
-            <input type="number" id="pages">
-        </div>
-
-        <div class="input-group">
-            <label for="price">Ціна (грн):</label>
-            <input type="number" id="price">
-        </div>
-
-        <button onclick="addBook()" id="add-btn">Додати книгу</button>
-        <button style="display: none;" id="edit-btn" onclick="saveChanges()">Зберегти зміни</button>
+    <div class="tabs">
+        <button class="tab-link" onclick="openTab(event, 'book-list')">Мої Книги</button>
+        <button class="tab-link" onclick="openTab(event, 'create')">Додати Книгу</button>
+        <button class="tab-link" onclick="openTab(event, 'edit')">Редагувати Книгу</button>
     </div>
 
-    <div class="group">
-        <div class="input-group">
-            <label for="search">Пошук:</label>
-            <input type="text" id="search" oninput="searchBook()">
-            <button onclick="resetSearch()">Скинути</button>
+    <div id="book-list" class="tab-content active-tab">
+        <h2>Список книг</h2>
+        <div>
+            <div>
+                <input type="text" id="search" placeholder="Пошук..." oninput="searchBook()">
+                <button onclick="resetSearch()">Скидання</button>
+                <button onclick="sortBooks()">Сортувати за ціною</button>
+            </div>
         </div>
+        <div class="total-expense">
+            Загальні витрати: <span id="total-price">0</span> грн
+        </div>
+        <div id="book-list-content"></div>
     </div>
 
-    <h2>Список книг:</h2>
-    <div class="total_price">
-        Загальна ціна: <span id="total-price">0</span> грн
-    </div>
-    <div class="sort-button-container">
-        <button onclick="sortBooks()">Сортувати книги за ціною</button>
+    <div id="create" class="tab-content">
+        <h2>Додати нову книгу</h2>
+        <div class="form-section">
+            <label>Назва:</label>
+            <input type="text" id="title-create"><br>
+            <label>Автор:</label>
+            <input type="text" id="author-create"><br>
+            <label>Кількість сторінок:</label>
+            <input type="number" id="pages-create"><br>
+            <label>Ціна (грн):</label>
+            <input type="number" id="price-create"><br>
+            <button onclick="addBook()">Додати книгу</button>
+        </div>
+        <div class="error-message" id="create-error" style="display:none;">Заповніть всі поля.</div>
     </div>
 
-    <div id="book-list"></div>
+    <div id="edit" class="tab-content">
+        <h2>Редагувати книгу</h2>
+        <div class="form-section">
+            <label>Назва:</label>
+            <input type="text" id="title-edit"><br>
+            <label>Автор:</label>
+            <input type="text" id="author-edit"><br>
+            <label>Кількість сторінок:</label>
+            <input type="number" id="pages-edit"><br>
+            <label>Ціна (грн):</label>
+            <input type="number" id="price-edit"><br>
+            <button onclick="saveChanges()">Зберегти зміни</button>
+        </div>
+        <div class="error-message" id="edit-error" style="display:none;">Заповніть всі поля.</div>
+    </div>
 
     <script src="js/script.js"></script>
 </body>

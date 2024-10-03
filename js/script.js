@@ -6,41 +6,72 @@ class Book {
         this.title = title;
         this.author = author;
         this.pages = pages;
-        this.price = price;
+        this.price = parseFloat(price); 
     }
 }
 
 function addBook() {
-    const title = document.getElementById('title').value;
-    const author = document.getElementById('author').value;
-    const pages = document.getElementById('pages').value;
-    const price = document.getElementById('price').value;
+    const title = document.getElementById('title-create').value;
+    const author = document.getElementById('author-create').value;
+    const pages = document.getElementById('pages-create').value;
+    const price = document.getElementById('price-create').value;
 
     if (title && author && pages && price) {
         const book = new Book(title, author, pages, price);
         books.push(book);
-        clearInputFields();
         renderBooks();
         updateTotalPrice();
+        clearInputFields('create');
+        document.getElementById('create-error').style.display = 'none';
     } else {
-        alert('Заповніть всі поля');
+        document.getElementById('create-error').style.display = 'block';
     }
 }
 
-function renderBooks() {
-    const bookList = document.getElementById('book-list');
-    bookList.innerHTML = books.map((book, index) => `
-        <div class="book-item">
-            <span class="book-title">Назва: ${book.title}</span><br>
-            <span class="book-author">Автор: ${book.author}</span><br>
-            <span class="book-pages">Кількість сторінок: ${book.pages}</span><br>
-            <span class="book-price">Ціна: ${book.price} грн</span><br>
-            <button class="delete-btn" onclick="deleteBook(${index})">Видалити</button>
-            <button class="edit-btn" onclick="startEdit(${index})">Редагувати</button>
-        </div>
-    `).join('');
+function startEdit(index) {
+    const book = books[index];
+    document.getElementById('title-edit').value = book.title;
+    document.getElementById('author-edit').value = book.author;
+    document.getElementById('pages-edit').value = book.pages;
+    document.getElementById('price-edit').value = book.price;
+
+    editIndex = index;
+    openTab(null, 'edit');
 }
 
+function saveChanges() {
+    const title = document.getElementById('title-edit').value;
+    const author = document.getElementById('author-edit').value;
+    const pages = document.getElementById('pages-edit').value;
+    const price = document.getElementById('price-edit').value;
+
+    if (title && author && pages && price) {
+        books[editIndex] = new Book(title, author, pages, price);
+        renderBooks();
+        updateTotalPrice();
+        clearInputFields('edit');
+        document.getElementById('edit-error').style.display = 'none';
+        openTab(null, 'book-list');
+    } else {
+        document.getElementById('edit-error').style.display = 'block';
+    }
+}
+
+function renderBooks(filteredBooks = books) {
+    const bookList = document.getElementById('book-list-content');
+    bookList.innerHTML = filteredBooks.length > 0 
+        ? filteredBooks.map((book, index) => `
+            <div class="book-item">
+                <span><b>Назва:</b> ${book.title}</span><br>
+                <span><b>Автор:</b> ${book.author}</span><br>
+                <span><b>Кількість сторінок:</b> ${book.pages}</span><br>
+                <span><b>Ціна:</b> ${book.price} грн</span><br>
+                <button onclick="startEdit(${index})">Редагувати</button>
+                <button onclick="deleteBook(${index})">Видалити</button>
+            </div>
+        `).join('') 
+        : `<p>Книги не знайдено</p>`;
+}
 
 function deleteBook(index) {
     books.splice(index, 1);
@@ -48,44 +79,31 @@ function deleteBook(index) {
     updateTotalPrice();
 }
 
-function startEdit(index) {
-    const book = books[index];
-    document.getElementById('title').value = book.title;
-    document.getElementById('author').value = book.author;
-    document.getElementById('pages').value = book.pages;
-    document.getElementById('price').value = book.price;
-
-    document.getElementById('add-btn').style.display = 'none';
-    document.getElementById('edit-btn').style.display = 'inline-block';
-
-    editIndex = index;
+function updateTotalPrice() {
+    const totalPrice = books.reduce((total, book) => total + book.price, 0);
+    document.getElementById('total-price').innerText = totalPrice;
 }
 
-function saveChanges() {
-    const title = document.getElementById('title').value;
-    const author = document.getElementById('author').value;
-    const pages = document.getElementById('pages').value;
-    const price = document.getElementById('price').value;
-
-    if (title && author && pages && price) {
-        books[editIndex] = new Book(title, author, pages, price);
-        clearInputFields();
-        renderBooks();
-        updateTotalPrice();
-
-        document.getElementById('add-btn').style.display = 'inline-block';
-        document.getElementById('edit-btn').style.display = 'none';
-        editIndex = -1;
-    } else {
-        alert('Заповніть всі поля');
+function openTab(evt, tabName) {
+    const tabcontent = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    const tablinks = document.getElementsByClassName("tab-link");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabName).style.display = "block";
+    if (evt) {
+        evt.currentTarget.classList.add("active");
     }
 }
 
-function clearInputFields() {
-    document.getElementById('title').value = '';
-    document.getElementById('author').value = '';
-    document.getElementById('pages').value = '';
-    document.getElementById('price').value = '';
+function clearInputFields(type) {
+    document.getElementById(`${type === 'create' ? 'title-create' : 'title-edit'}`).value = '';
+    document.getElementById(`${type === 'create' ? 'author-create' : 'author-edit'}`).value = '';
+    document.getElementById(`${type === 'create' ? 'pages-create' : 'pages-edit'}`).value = '';
+    document.getElementById(`${type === 'create' ? 'price-create' : 'price-edit'}`).value = '';
 }
 
 function searchBook() {
@@ -94,22 +112,7 @@ function searchBook() {
         book.title.toLowerCase().includes(searchTerm) || 
         book.author.toLowerCase().includes(searchTerm)
     );
-
-    renderFilteredBooks(filteredBooks);
-}
-
-function renderFilteredBooks(filteredBooks) {
-    const bookList = document.getElementById('book-list');
-    bookList.innerHTML = filteredBooks.map((book, index) => `
-        <div class="book-item">
-            <span class="book-title">Назва: ${book.title}</span><br>
-            <span class="book-author">Автор: ${book.author}</span><br>
-            <span class="book-pages">Кількість сторінок: ${book.pages}</span><br>
-            <span class="book-price">Ціна: ${book.price} грн</span><br>
-            <button class="delete-btn" onclick="deleteBook(${index})">Видалити</button>
-            <button class="edit-btn" onclick="startEdit(${index})">Редагувати</button>
-        </div>
-    `).join('');
+    renderBooks(filteredBooks);
 }
 
 function resetSearch() {
@@ -122,12 +125,4 @@ function sortBooks() {
     renderBooks();
 }
 
-function calculateTotalPrice() {
-    return books.reduce((total, book) => total + parseFloat(book.price), 0);
-}
-
-function updateTotalPrice() {
-    const totalPrice = calculateTotalPrice();
-    document.getElementById('total-price').innerText = totalPrice;
-}
-
+openTab(null, 'book-list');
